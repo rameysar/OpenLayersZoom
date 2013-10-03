@@ -42,6 +42,7 @@ class ZoomifyFileProcessor
     public $tileSize = 256;
     public $qualitySetting = 80;
 
+    protected $_tileExt = 'jpg';
     protected $_imageFilename = '';
     protected $_originalWidth = 0;
     protected $_originalHeight = 0;
@@ -56,11 +57,11 @@ class ZoomifyFileProcessor
      */
     public function ZoomifyProcess($image_name)
     {
-      $this->_imageFilename = realpath($image_name);
-      $this->_createDataContainer();
-      $this->_getImageMetadata();
-      $this->_processImage();
-      $this->_saveXMLOutput();
+        $this->_imageFilename = realpath($image_name);
+        $this->_createDataContainer();
+        $this->_getImageMetadata();
+        $this->_processImage();
+        $this->_saveXMLOutput();
     }
 
     /**
@@ -73,7 +74,7 @@ class ZoomifyFileProcessor
     {
         $extension = pathinfo($filepath, PATHINFO_EXTENSION);
         $root = $extension ? substr($filepath, 0, strrpos($filepath, '.')) : $filepath;
-        return array($root, '.' . $extension);
+        return array($root, $extension);
     }
 
     /**
@@ -83,7 +84,7 @@ class ZoomifyFileProcessor
      */
     protected function _getTileFilename($scaleNumber, $columnNumber, $rowNumber)
     {
-        return (string) $scaleNumber . '-' . (string) $columnNumber . '-' . (string) $rowNumber . '.jpg';
+        return (string)$scaleNumber . '-' . (string)$columnNumber . '-' . (string)$rowNumber . '.' . $this->_tileExt;
     }
 
     /**
@@ -93,7 +94,7 @@ class ZoomifyFileProcessor
      */
     protected function _getNewTileContainerName($tileGroupNumber = 0)
     {
-        return 'TileGroup' . (string) $tileGroupNumber;
+        return 'TileGroup' . (string)$tileGroupNumber;
     }
 
     /**
@@ -218,7 +219,7 @@ class ZoomifyFileProcessor
             $ul_y = 0;
             $lr_x = 0;
             $lr_y = 0;
-            while (! (($lr_x == $width) && ($lr_y == $height))) {
+            while (!(($lr_x == $width) && ($lr_y == $height))) {
                 $tileFilename = $this->_getTileFilename($tier, $column, $row);
                 $tileContainerName = $this->_getNewTileContainerName($tileGroupNumber);
 
@@ -238,12 +239,8 @@ class ZoomifyFileProcessor
                 $numberOfTiles++;
 
                 // for the next tile, set lower right cropping point
-                $lr_x = ($ul_x + $this->tileSize < $width)
-                    ? $ul_x + $this->tileSize
-                    : $width;
-                $lr_y = ($ul_y + $this->tileSize < $height)
-                    ? $ul_y + $this->tileSize
-                    : $height;
+                $lr_x = ($ul_x + $this->tileSize < $width) ? $ul_x + $this->tileSize : $width;
+                $lr_y = ($ul_y + $this->tileSize < $height) ? $ul_y + $this->tileSize : $height;
 
                 // for the next tile, set upper left cropping point
                 if ($lr_x == $width) {
@@ -280,15 +277,13 @@ class ZoomifyFileProcessor
         // Create a row from the original image and process it.
         while ($row * $this->tileSize < $this->_originalHeight) {
             $ul_y = $row * $this->tileSize;
-            $lr_y = ($ul_y + $this->tileSize < $this->_originalHeight)
-                ? $ul_y + $this->tileSize
-                : $this->_originalHeight;
+            $lr_y = ($ul_y + $this->tileSize < $this->_originalHeight) ? $ul_y + $this->tileSize : $this->_originalHeight;
             $width = $this->_originalWidth;
             $height = abs($lr_y - $ul_y);
             // print "line " . __LINE__ . " calling crop<br />" . PHP_EOL;
             # imageRow = image.crop([0, ul_y, $this->_originalWidth, lr_y])
             // $imageRow = imageCrop($image, 0, $ul_y, $this->originalWidth, $lr_y);
-            $saveFilename = $root . $tier . '-' . $row . $ext;
+            $saveFilename = $root . $tier . '-' . $row . '.' . $ext;
             $imageRow = new Imagick();
             $imageRow->readImage($this->_imageFilename);
             $imageRow->cropImage($width, $height, 0, $ul_y);
@@ -328,7 +323,7 @@ class ZoomifyFileProcessor
         // Create row for the current tier.
         // First tier.
         if ($tier == count($this->_scaleInfo) - 1) {
-            $firstTierRowFile = $root . $tier . '-' . $row . $ext;
+            $firstTierRowFile = $root . $tier . '-' . $row . '.' . $ext;
             if ($this->_debug) {
                 print "firstTierRowFile=$firstTierRowFile<br />" . PHP_EOL;
             }
@@ -351,12 +346,12 @@ class ZoomifyFileProcessor
             // row file.
             // $imageRow = imagecreatetruecolor($tierWidth, $this->tileSize);
             $imageRow = new Imagick();
-            $imageRow->newImage($tierWidth, $this->tileSize, 'none', 'jpg');
+            $imageRow->newImage($tierWidth, $this->tileSize, 'none', $this->_tileExt);
 
             $t = $tier + 1;
             $r = $row + $row;
 
-            $firstRowFile = $root . $t . '-' . $r . $ext;
+            $firstRowFile = $root . $t . '-' . $r . '.' . $ext;
             $firstRowWidth = 0;
             $firstRowHeight = 0;
             if ($this->_debug) {
@@ -389,7 +384,7 @@ class ZoomifyFileProcessor
             }
 
             $r++;
-            $secondRowFile =  $root . $t . '-' . $r . $ext;
+            $secondRowFile = $root . $t . '-' . $r . '.' . $ext;
             $secondRowWidth = 0;
             $secondRowHeight = 0;
             if ($this->_debug) {
@@ -452,13 +447,8 @@ class ZoomifyFileProcessor
                     print "ul_x=$ul_x lr_x=$lr_x ul_y=$ul_y lr_y=$lr_y imageWidth=$imageWidth imageHeight=$imageHeight<br />" . PHP_EOL;
                 }
                 // Set lower right cropping point.
-                $lr_x = (($ul_x + $this->tileSize) < $imageWidth)
-                    ? $ul_x + $this->tileSize
-                    : $imageWidth;
-
-                $lr_y = (($ul_y + $this->tileSize) < $imageHeight)
-                    ? $ul_y + $this->tileSize
-                    : $imageHeight;
+                $lr_x = (($ul_x + $this->tileSize) < $imageWidth) ? $ul_x + $this->tileSize : $imageWidth;
+                $lr_y = (($ul_y + $this->tileSize) < $imageHeight) ? $ul_y + $this->tileSize : $imageHeight;
                 $width = abs($lr_x - $ul_x);
                 $height = abs($lr_y - $ul_y);
 
@@ -468,8 +458,12 @@ class ZoomifyFileProcessor
                 }
                 $tileFilename = $this->_getFileReference($tier, $column, $row);
                 // $this->saveTile(imageCrop($imageRow, $ul_x, $ul_y, $lr_x, $lr_y), $tier, $column, $row);
+
                 $tileImage = clone $imageRow;
+                // Clean the canvas.
+                $tileImage->setImagePage(0, 0, 0, 0);
                 $tileImage->cropImage($width, $height, $ul_x, $ul_y);
+                $tileImage->setImageFormat($this->_tileExt);
                 $tileImage->setImageCompression(Imagick::COMPRESSION_JPEG);
                 $tileImage->setImageCompressionQuality($this->qualitySetting);
                 $tileImage->writeImage($tileFilename);
@@ -499,7 +493,7 @@ class ZoomifyFileProcessor
             if ($tier > 0) {
                 $halfWidth = max(1, floor($imageWidth / 2));
                 $halfHeight = max(1, floor($imageHeight / 2));
-                $rowFilename = $root . $tier . '-' . $row . $ext;
+                $rowFilename = $root . $tier . '-' . $row . '.' . $ext;
                 # print 'resize as ' + str(imageWidth/2) + ' by ' + str(imageHeight/2) + ' (or ' + str(halfWidth) + ' x ' + str(halfHeight) + ')'
                 # tempImage = imageRow.resize((imageWidth / 2, imageHeight / 2), PIL.Image.ANTIALIAS)
                 # tempImage = imageRow.resize((halfWidth, halfHeight), PIL.Image.ANTIALIAS)
@@ -515,7 +509,8 @@ class ZoomifyFileProcessor
                 @chgrp($rowFilename, $this->fileGroup);
             }
 
-            $imageRow->destroy(); // http://greengaloshes.cc/2007/05/zoomifyimage-ported-to-php/#comment-451
+            // http://greengaloshes.cc/2007/05/zoomifyimage-ported-to-php/#comment-451
+            $imageRow->destroy();
 
             // Process next tiers via a recursive call.
             if ($tier > 0) {

@@ -65,25 +65,6 @@ function rm($fileglob)
 }
 
 /**
- * Crop an image to a size.
- *
- * @return ressource identifier of the image.
- */
-function imageCrop($image, $left, $upper, $right, $lower)
-{
-    // $x = imagesx($image);
-    // $y = imagesy($image);
-    // if ($this->_debug) {
-    //     print "imageCrop x=$x y=$y left=$left upper=$upper right=$right lower=$lower<br />" . PHP_EOL;
-    // }
-    $w = abs($right - $left);
-    $h = abs($lower - $upper);
-    $crop = imagecreatetruecolor($w, $h);
-    imagecopy($crop, $image, 0, 0, $left, $upper, $w, $h);
-    return $crop;
-}
-
-/**
  * ZoomifyFileProcessor class.
  */
 class ZoomifyFileProcessor
@@ -97,6 +78,7 @@ class ZoomifyFileProcessor
     public $tileSize = 256;
     public $qualitySetting = 80;
 
+    protected $_tileExt = 'jpg';
     protected $_imageFilename = '';
     protected $_originalWidth = 0;
     protected $_originalHeight = 0;
@@ -159,7 +141,7 @@ class ZoomifyFileProcessor
     function getTileFileName($scaleNumber, $columnNumber, $rowNumber)
     {
         // return '%s-%s-%s.jpg' % (str(scaleNumber), str(columnNumber), str(rowNumber))
-        return "$scaleNumber-$columnNumber-$rowNumber.jpg";
+        return "$scaleNumber-$columnNumber-$rowNumber.$this->_tileExt";
     }
 
     /**
@@ -266,8 +248,8 @@ class ZoomifyFileProcessor
             }
             // print "line " . __LINE__ . " calling crop<br />" . PHP_EOL;
             # imageRow = image.crop([0, ul_y, $this->_originalWidth, lr_y])
-            $imageRow = imageCrop($image, 0, $ul_y, $this->_originalWidth, $lr_y);
-            $saveFilename = $root . $tier . '-' . $row . $ext;
+            $imageRow = $this->imageCrop($image, 0, $ul_y, $this->_originalWidth, $lr_y);
+            $saveFilename = $root . $tier . '-' . $row . '.' . $ext;
             if ($this->_debug) {
                 print "processImage root=$root tier=$tier row=$row saveFilename=$saveFilename<br />" . PHP_EOL;
             }
@@ -303,7 +285,7 @@ class ZoomifyFileProcessor
         $imageRow = null;
 
         if ($tier == count($this->_scaleInfo) - 1) {
-            $firstTierRowFile = $root . $tier . '-' . $row . $ext;
+            $firstTierRowFile = $root . $tier . '-' . $row . '.' . $ext;
             if ($this->_debug) {
                 print "firstTierRowFile=$firstTierRowFile<br />" . PHP_EOL;
             }
@@ -319,7 +301,7 @@ class ZoomifyFileProcessor
             $imageRow = imagecreatetruecolor($tierWidth, $this->tileSize);
             $t = $tier + 1;
             $r = $row + $row;
-            $firstRowFile = $root . $t . '-' . $r . $ext;
+            $firstRowFile = $root . $t . '-' . $r . '.' . $ext;
             if ($this->_debug) {
                 print "create this row from previous tier's rows tier=$tier row=$row firstRowFile=$firstRowFile<br />" . PHP_EOL;
             }
@@ -350,7 +332,7 @@ class ZoomifyFileProcessor
             }
 
             $r++;
-            $secondRowFile =  $root . $t . '-' . $r . $ext;
+            $secondRowFile =  $root . $t . '-' . $r . '.' . $ext;
             if ($this->_debug) {
                 print "create this row from previous tier's rows tier=$tier row=$row secondRowFile=$secondRowFile<br />" . PHP_EOL;
             }
@@ -380,7 +362,7 @@ class ZoomifyFileProcessor
                     print "line " . __LINE__ . " calling crop rowHeight=$rowHeight tileHeight=$tileHeight<br />" . PHP_EOL;
                 }
                 # imageRow = imageRow.crop((0, 0, tierWidth, (firstRowHeight + secondRowHeight)))
-                $imageRow = imageCrop($imageRow, 0, 0, $tierWidth, $firstRowHeight + $secondRowHeight);
+                $imageRow = $this->imageCrop($imageRow, 0, 0, $tierWidth, $firstRowHeight + $secondRowHeight);
             }
         }
 
@@ -416,7 +398,7 @@ class ZoomifyFileProcessor
                 if ($this->_debug) {
                     print "line " . __LINE__ . " calling crop<br />" . PHP_EOL;
                 }
-                $this->saveTile(imageCrop($imageRow, $ul_x, $ul_y, $lr_x, $lr_y), $tier, $column, $row);
+                $this->saveTile($this->imageCrop($imageRow, $ul_x, $ul_y, $lr_x, $lr_y), $tier, $column, $row);
                 $this->_numberOfTiles++;
                 if ($this->_debug) {
                     print "created tile: numberOfTiles= $this->_numberOfTiles tier column row =($tier,$column,$row)<br />" . PHP_EOL;
@@ -438,7 +420,7 @@ class ZoomifyFileProcessor
             if ($tier > 0) {
                 $halfWidth = max(1, floor($imageWidth / 2));
                 $halfHeight = max(1, floor($imageHeight / 2));
-                $rowFileName = $root . $tier . '-' . $row . $ext;
+                $rowFileName = $root . $tier . '-' . $row . '.' . $ext;
                 # print 'resize as ' + str(imageWidth/2) + ' by ' + str(imageHeight/2) + ' (or ' + str(halfWidth) + ' x ' + str(halfHeight) + ')'
                 # tempImage = imageRow.resize((imageWidth / 2, imageHeight / 2), PIL.Image.ANTIALIAS)
                 # tempImage = imageRow.resize((halfWidth, halfHeight), PIL.Image.ANTIALIAS)
@@ -486,6 +468,25 @@ class ZoomifyFileProcessor
     }
 
     /**
+     * Crop an image to a size.
+     *
+     * @return ressource identifier of the image.
+     */
+    function imageCrop($image, $left, $upper, $right, $lower)
+    {
+        // $x = imagesx($image);
+        // $y = imagesy($image);
+        // if ($this->_debug) {
+        //     print "imageCrop x=$x y=$y left=$left upper=$upper right=$right lower=$lower<br />" . PHP_EOL;
+        // }
+        $w = abs($right - $left);
+        $h = abs($lower - $upper);
+        $crop = imagecreatetruecolor($w, $h);
+        imagecopy($crop, $image, 0, 0, $left, $upper, $w, $h);
+        return $crop;
+    }
+
+    /**
      * Return the name of the tile group for the indicated tile.
      *
      * @return string
@@ -527,7 +528,7 @@ class ZoomifyFileProcessor
     {
         $extension = pathinfo($filepath, PATHINFO_EXTENSION);
         $root = $extension ? substr($filepath, 0, strrpos($filepath, '.')) : $filepath;
-        return array($root, '.' . $extension);
+        return array($root, $extension);
     }
 
     /**
