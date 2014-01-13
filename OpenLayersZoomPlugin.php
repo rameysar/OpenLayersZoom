@@ -2,7 +2,7 @@
 /**
  * OpenLayers Zoom: an OpenLayers based image zoom widget.
  *
- * @copyright Daniel Berthereau, 2013
+ * @copyright Daniel Berthereau, 2013-2014
  * @copyright Peter Binkley, 2012-2013
  * @copyright Matt Miller, 2012
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
@@ -30,6 +30,8 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
         'uninstall',
         'config_form',
         'config',
+        'admin_items_batch_edit_form',
+        'items_batch_edit_custom',
         'public_head',
         'after_save_item',
         'before_delete_file',
@@ -41,6 +43,8 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
      */
     protected $_filters = array(
         'admin_items_form_tabs',
+        // Currently, it's a checkbox, so no error can be done.
+        // 'items_batch_edit_error',
     );
 
     /**
@@ -93,7 +97,10 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookConfigForm()
     {
-        require 'config_form.php';
+        echo get_view()->partial(
+            'plugins/openlayerszoom-config-form.php',
+            array()
+        );
     }
 
     /**
@@ -110,9 +117,56 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Add css and js in the header of the public theme.
+     * Add a partial batch edit form.
      *
-     * TODO Don't add css and javascript when OpenLayersZoom is not used.
+     * @return void
+     */
+    public function hookAdminItemsBatchEditForm($args)
+    {
+        $view = $args['view'];
+        echo get_view()->partial(
+            'forms/openlayerszoom-batch-edit.php'
+        );
+    }
+
+    /**
+     * Process the partial batch edit form.
+     *
+     * @return void
+     */
+    public function hookItemsBatchEditCustom($args)
+    {
+        $item = $args['item'];
+        $zoomify = $args['custom']['openlayerszoom']['zoomify'];
+
+        if (!$zoomify) {
+            return;
+        }
+
+        $supportedFormats = array(
+            'jpeg' => 'JPEG Joint Photographic Experts Group JFIF format',
+            'jpg' => 'Joint Photographic Experts Group JFIF format',
+            'png' => 'Portable Network Graphics',
+            'gif' => 'Graphics Interchange Format',
+            'tiff' => 'Tagged Image File Format',
+        );
+        // Set the regular expression to match selected/supported formats.
+        $supportedFormatRegEx = '/\.' . implode('|', array_keys($supportedFormats)) . '$/i';
+
+        // Retrieve image files from the item.
+        set_loop_records('files', $item->Files);
+        foreach (loop('files') as $file) {
+            if ($file->hasThumbnail()
+                    && preg_match($supportedFormatRegEx, $file->filename)
+                    && !$this->isZoomed($file)
+                ) {
+                $this->_createTiles($file->filename);
+            }
+        }
+    }
+
+    /**
+     * Add css and js in the header of the public theme.
      */
     public function hookPublicHead($args)
     {
@@ -211,7 +265,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
             // If the var is set then they are requesting a specific image to be
             // zoomed not just the first.
             // This is kind of a hack to get around some problems with OpenLayers
-            // displaying multiple zoomify layers on a single page
+            // displaying multiple zoomify layers on a single page.
             // It doesn't even come into play if there is just one zoomed image
             // per record.
             $open_zoom_layer_req = isset($_REQUEST['open_zoom_layer_req'])
