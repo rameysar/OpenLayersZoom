@@ -10,7 +10,7 @@
 #open_layers_zoom_map_more a {
     margin-right: 5px;
 }
-.open_layers_zoom_map_full_window {
+.olMap.open_layers_zoom_map_full_window {
     height: 100% !important;
     width: 100% !important;
     position: fixed;
@@ -45,6 +45,7 @@
 .olControlOverviewMapContainer {
     position: absolute;
     left: 0;
+    right: auto;
     bottom: 0;
 }
 .olControlOverviewMapElement {

@@ -23,77 +23,79 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
     // specifc request display it.
     if ((req == -1 && open_layers_zoom_total_zooms == 0) || open_layers_zoom_total_zooms == req) {
 
-    /* Vector layer */
+        /* Vector layer */
 
-    /**
-     * Layer style
-     */
-    var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
-        styleMap: new OpenLayers.StyleMap({
-          "default": new OpenLayers.Style({
-            fillColor: "red",
-            fillOpacity: 0,
-            strokeColor: "red",
-            strokeWidth: 0
-          }),
-          "highlight": new OpenLayers.Style({
-            fillColor: "red",
-            fillOpacity: 0.2,
-            strokeWidth: 0
-          })
-        })
-    });
+        /**
+         * Layer style
+         */
+        var vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+            styleMap: new OpenLayers.StyleMap({
+              "default": new OpenLayers.Style({
+                fillColor: "red",
+                fillOpacity: 0,
+                strokeColor: "red",
+                strokeWidth: 0
+              }),
+              "highlight": new OpenLayers.Style({
+                fillColor: "red",
+                fillOpacity: 0.2,
+                strokeWidth: 0
+              })
+            })
+        });
 
-    zoomify = new OpenLayers.Layer.Zoomify( "zoom", url, new OpenLayers.Size( width, height ) );
+        zoomify = new OpenLayers.Layer.Zoomify( "zoom", url, new OpenLayers.Size( width, height ) );
 
-    var mapbounds =  new OpenLayers.Bounds(0, 0, width, height);
+        var mapbounds =  new OpenLayers.Bounds(0, 0, width, height);
 
-    // Full screen button, based on http://jsfiddle.net/_DR_/K2WaA/1/
-    var fullscreenPanel = new OpenLayers.Control.Panel({displayClass: 'open_layers_zoom_map_full_window_panel'});
+        // Full screen button, based on http://jsfiddle.net/_DR_/K2WaA/1/
+        var fullscreenPanel = new OpenLayers.Control.Panel({displayClass: 'open_layers_zoom_map_full_window_panel'});
 
-    var fullscreenControl = new OpenLayers.Control.Button({
-        displayClass: 'open_layers_zoom_map_full_window_button',
-        type: OpenLayers.Control.TYPE_TOGGLE,
-        eventListeners: {
-            'activate': function () {
-              open_layers_zoom_toggle_full_window();
-              map.updateSize();
-              map.zoomToMaxExtent();
-            },
-            'deactivate': function () {
-              open_layers_zoom_toggle_full_window();
-              map.updateSize();
-              map.zoomToMaxExtent();
+        var fullscreenControl = new OpenLayers.Control.Button({
+            displayClass: 'open_layers_zoom_map_full_window_button',
+            type: OpenLayers.Control.TYPE_TOGGLE,
+            eventListeners: {
+                'activate': function () {
+                  open_layers_zoom_toggle_full_window();
+                  map.updateSize();
+                  map.zoomToMaxExtent();
+                },
+                'deactivate': function () {
+                  open_layers_zoom_toggle_full_window();
+                  map.updateSize();
+                  map.zoomToMaxExtent();
+                }
             }
-        }
-    });
-    fullscreenPanel.addControls(fullscreenControl);
+        });
+        fullscreenPanel.addControls(fullscreenControl);
 
-    // We must list all the controls, since we want to replace the default
-    // PanZoom with a PanZoomBar
-    options = {
-        maxExtent: mapbounds,
-        restrictedExtent: mapbounds,
-        maxResolution: Math.pow(2, zoomify.numberOfTiers -1),
-        numZoomLevels: zoomify.numberOfTiers,
-        units: "pixels",
-        controls:[
-        new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.ArgParser(),
-        new OpenLayers.Control.Attribution(),
-        new OpenLayers.Control.PanZoomBar({
-            "zoomWorldIcon": true
-        }),
-        fullscreenPanel]
-    };
+        // We must list all the controls, since we want to replace the default
+        // PanZoom with a PanZoomBar
+        options = {
+            maxExtent: mapbounds,
+            restrictedExtent: mapbounds,
+            maxResolution: Math.pow(2, zoomify.numberOfTiers -1),
+            numZoomLevels: zoomify.numberOfTiers,
+            units: "pixels",
+            controls:[
+                new OpenLayers.Control.Navigation(),
+                new OpenLayers.Control.ArgParser(),
+                new OpenLayers.Control.Attribution(),
+                new OpenLayers.Control.PanZoomBar({
+                    "zoomWorldIcon": true
+                }),
+                fullscreenPanel
+            ]
+        };
 
-    map = new OpenLayers.Map("open_layers_zoom_map", options);
-    map.addLayer(zoomify);
-    map.addControl(new OpenLayers.Control.Permalink('permalink', null, {
-    }));
-    map.setBaseLayer(zoomify);
+        map = new OpenLayers.Map("open_layers_zoom_map", options);
+        map.addLayer(zoomify);
+        map.addControl(new OpenLayers.Control.Permalink('permalink', null, {
+        }));
+        map.setBaseLayer(zoomify);
 
-    if (!map.getCenter()) map.zoomToMaxExtent();
+        if (!map.getCenter()) map.zoomToMaxExtent();
+
         // Add overview map
         // workaround based on http://osgeo-org.1803224.n2.nabble.com/zoomify-layer-WITH-overview-map-td5534360.html
 
