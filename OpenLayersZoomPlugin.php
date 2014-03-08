@@ -53,6 +53,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_options = array(
         'openlayerszoom_tiles_dir' => '/zoom_tiles',
         'openlayerszoom_tiles_web' => '/zoom_tiles',
+        'openlayerszoom_use_public_head' => true,
     );
 
     /**
@@ -114,6 +115,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
 
         set_option('openlayerszoom_tiles_dir', realpath(trim($post['openlayerszoom_tiles_dir'])));
         set_option('openlayerszoom_tiles_web', trim($post['openlayerszoom_tiles_web']));
+        set_option('openlayerszoom_use_public_head', (integer) (boolean) $post['openlayerszoom_use_public_head']);
     }
 
     /**
@@ -148,6 +150,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
             'jpg' => 'Joint Photographic Experts Group JFIF format',
             'png' => 'Portable Network Graphics',
             'gif' => 'Graphics Interchange Format',
+            'tif' => 'Tagged Image File Format',
             'tiff' => 'Tagged Image File Format',
         );
         // Set the regular expression to match selected/supported formats.
@@ -170,6 +173,10 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
      */
     public function hookPublicHead($args)
     {
+        if (!get_option('openlayerszoom_use_public_head')) {
+            return;
+        }
+
         $view = $args['view'];
 
         $request = Zend_Controller_Front::getInstance()->getRequest();

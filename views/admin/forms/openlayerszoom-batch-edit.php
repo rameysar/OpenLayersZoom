@@ -1,9 +1,9 @@
 <fieldset id="openlayerszoom-item-metadata">
-    <h2><?php echo __(' Zoomify'); ?></h2>
+    <h2><?php echo __(' OpenLayersZoom'); ?></h2>
     <div class="field">
         <p class="explanation">
             <?php echo __('Zoomify all images of selected items in order to display them via OpenLayersZoom.');
-                echo ' ' . __('Warning: Zoomify process is heavy, so you may need to increase memory and time on your server.');
+                echo ' ' . __('Warning: Zoomify process is heavy, so you may need to increase memory and time on your server before proceeding.');
             ?>
         </p>
         <label class="two columns alpha">
