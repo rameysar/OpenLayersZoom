@@ -42,6 +42,12 @@
     background-position: 0 -25px;
 }
 
+.item .olMap img, .image .olMap img {
+    border-width: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
 .olControlOverviewMapContainer {
     position: absolute;
     left: 0;

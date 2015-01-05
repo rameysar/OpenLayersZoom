@@ -30,6 +30,42 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
     }
 
     /**
+     * Returns an OpenLayersZoom to display for an item or a file.
+     *
+     * @param Record $record Item or File to zoom.
+     *
+     * @return html.
+     */
+    public function zoom($record)
+    {
+        $html = '';
+
+        switch (get_class($record)) {
+            case 'Item':
+                $zoomedFiles = $this->getZoomedFiles($record);
+                if (!empty($zoomedFiles)) {
+                    $html = '<div class="openlayerszoom-images">';
+                    foreach ($zoomedFiles as $file) {
+                        $html .= $this->_zoomFile($file);
+                    }
+                    $html .= '</div>';
+                }
+                break;
+
+            case 'File':
+                $result = $this->_zoomFile($record);
+                if ($result) {
+                    $html = '<div class="openlayerszoom-images">';
+                    $html .= $result;
+                    $html .= '</div>';
+                }
+                break;
+        }
+
+        return $html;
+    }
+
+    /**
      * Get an array of all zoomed images of an item.
      *
      * @param object $item
@@ -110,5 +146,36 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
     }
 
         return $tileUrl;
+    }
+
+    /**
+     * Helper to zoom a file.
+     */
+    protected function _zoomFile($file)
+    {
+        $tileUrl = $this->getTileUrl($file);
+        if ($tileUrl) {
+            // Root is not used in the javascript, but only here.
+            list($root, $ext) = $this->_creator->getRootAndExtension($file->filename);
+
+            // Grab the width/height of the original image.
+            list($width, $height, $type, $attr) = getimagesize(FILES_DIR . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . $file->filename);
+
+            // If the var is set then they are requesting a specific image to be
+            // zoomed not just the first.
+            // This is kind of a hack to get around some problems with OpenLayers
+            // displaying multiple zoomify layers on a single page.
+            // It doesn't even come into play if there is just one zoomed image
+            // per record.
+            $open_zoom_layer_req = isset($_REQUEST['open_zoom_layer_req'])
+                ? html_escape($_REQUEST['open_zoom_layer_req'])
+                : '-1';
+
+            $html = '<script type="text/javascript">'
+                . 'open_layers_zoom_add_zoom("' . $root . '","' . $width . '","' . $height . '","' . $tileUrl . '/",' . $open_zoom_layer_req . ');'
+            . '</script>';
+
+            return $html;
+        }
     }
 }

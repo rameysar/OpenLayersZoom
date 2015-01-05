@@ -25,6 +25,17 @@
     </div>
     <div class="field">
         <div class="two columns alpha">
+            <?php echo $this->formLabel('openlayerszoom_use_default_hook', __('Use "public_items_show" hook')); ?>
+        </div>
+        <div class='inputs five columns omega'>
+            <?php echo $this->formCheckbox('openlayerszoom_use_default_hook', true, array('checked' => (boolean) get_option('openlayerszoom_use_default_hook'))); ?>
+            <p class="explanation">
+                <?php echo __('Enable the default hook to display the OpenLayersZoom for an item. Disable it if you want more control on display in theme.'); ?>
+            </p>
+        </div>
+    </div>
+    <div class="field">
+        <div class="two columns alpha">
             <?php echo $this->formLabel('openlayerszoom_use_public_head', __('Automatically add css and javascript')); ?>
         </div>
         <div class='inputs five columns omega'>

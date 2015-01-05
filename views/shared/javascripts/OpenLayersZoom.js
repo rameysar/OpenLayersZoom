@@ -14,9 +14,9 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
     // Is this the first call to this function to add a zoom element?
     if (! open_layers_zoom_total_zooms) {
         // Yes so add the holders
-        jQuery("#item-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map'));
-        jQuery("#item-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more'));
-        jQuery("#item-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window'));
+        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map'));
+        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more'));
+        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window'));
     }
 
     // If this is not a specific request and it is the first image or it is a

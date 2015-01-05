@@ -28,6 +28,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
         'public_head',
         'after_save_item',
         'before_delete_file',
+        'public_items_show',
         'open_layers_zoom_display_file',
     );
 
@@ -46,6 +47,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_options = array(
         'openlayerszoom_tiles_dir' => '/zoom_tiles',
         'openlayerszoom_tiles_web' => '/zoom_tiles',
+        'openlayerszoom_use_default_hook' => true,
         'openlayerszoom_use_public_head' => true,
     );
 
@@ -243,47 +245,51 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
      *
      * @return string
      */
+    public function hookPublicItemsShow($args = array())
+    {
+        if (!get_option('openlayerszoom_use_default_hook')) {
+            return;
+        }
+
+        $view = $args['view'];
+        $item = $args['item'];
+
+        echo $view->openLayersZoom()->zoom($item);
+    }
+
+    /**
+     * Controls how the image will be returned.
+     *
+     * @deprecated since v 2.5
+     * @todo To be removed in next release.
+     * @internal Different from public_items_show hook, because it can return
+     * the normal file if the file is not zoomed and it needs to be wrapped with
+     * <div id="openlayerszoom-images"></div>.
+     *
+     * @param array $args
+     *   Array containing:
+     *   - 'file': object a file object
+     *   - 'options'
+     *
+     * @return string
+     */
     public function hookOpenLayersZoomDisplayFile($args = array())
     {
         if (!isset($args['file'])) {
-            return '';
+            return;
         }
 
         $file = $args['file'];
-        $options = isset($args['options']) ? $args['options'] : array();
-
-        // Is it a zoomified file?
         $view = get_view();
-        $tileUrl = $view->openLayersZoom()->getTileUrl($file);
 
-        // Do not show the zoomer on the admin page.
-        if ($tileUrl) {
-            // Root is not used in the javascript, but only here.
-            $creator = new OpenLayersZoom_Creator();
-            list($root, $ext) = $creator->getRootAndExtension($file->filename);
+        $html = $view->openLayersZoom()->zoom($file);
 
-            // Grab the width/height of the original image.
-            list($width, $height, $type, $attr) = getimagesize(FILES_DIR . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR . $file->filename);
-
-            // If the var is set then they are requesting a specific image to be
-            // zoomed not just the first.
-            // This is kind of a hack to get around some problems with OpenLayers
-            // displaying multiple zoomify layers on a single page.
-            // It doesn't even come into play if there is just one zoomed image
-            // per record.
-            $open_zoom_layer_req = isset($_REQUEST['open_zoom_layer_req'])
-                ? html_escape($_REQUEST['open_zoom_layer_req'])
-                : '-1';
-
-            $html = '<script type="text/javascript">
-                open_layers_zoom_add_zoom("' . $root . '","' . $width . '","' . $height . '","' . $tileUrl . '/",' . $open_zoom_layer_req . ');
-            </script>';
-        }
-
-        // Else display normal file.
-        else {
+        // Display normal file if nothing.
+        if (empty($html)) {
+            $options = isset($args['options']) ? $args['options'] : array();
             $html = file_markup($file, $options);
         }
+
         echo $html;
     }
 
