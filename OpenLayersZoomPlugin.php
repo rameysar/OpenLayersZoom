@@ -2,7 +2,7 @@
 /**
  * OpenLayers Zoom: an OpenLayers based image zoom widget.
  *
- * @copyright Daniel Berthereau, 2013-2014
+ * @copyright Daniel Berthereau, 2013-2015
  * @copyright Peter Binkley, 2012-2013
  * @copyright Matt Miller, 2012
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
@@ -93,29 +93,26 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
 
     /**
      * Shows plugin configuration page.
-     *
-     * @return void
      */
-    public function hookConfigForm()
+    public function hookConfigForm($args)
     {
-        echo get_view()->partial(
-            'plugins/openlayerszoom-config-form.php',
-            array()
-        );
+        $view = get_view();
+        echo $view->partial('plugins/openlayerszoom-config-form.php');
     }
 
     /**
-     * Processes the configuration form.
+     * Saves plugin configuration page.
      *
-     * @return void
+     * @param array Options set in the config form.
      */
     public function hookConfig($args)
     {
         $post = $args['post'];
 
-        set_option('openlayerszoom_tiles_dir', realpath(trim($post['openlayerszoom_tiles_dir'])));
-        set_option('openlayerszoom_tiles_web', trim($post['openlayerszoom_tiles_web']));
-        set_option('openlayerszoom_use_public_head', (integer) (boolean) $post['openlayerszoom_use_public_head']);
+        $post['openlayerszoom_tiles_dir'] = realpath(trim($post['openlayerszoom_tiles_dir']));
+        foreach ($post as $key => $value) {
+            set_option($key, $value);
+        }
     }
 
     /**
@@ -490,7 +487,9 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $filename = is_string($file) ? $file : $file->filename;
         list($root, $extension) = $this->_getRootAndExtension($filename);
-        return get_option('openlayerszoom_tiles_web') . DIRECTORY_SEPARATOR . $root . self::ZOOM_FOLDER_EXTENSION;
+        $zoom_tiles_web = get_option('openlayerszoom_tiles_web');
+        $zoom_tiles_web = strpos($zoom_tiles_web, 'http') === 0 ? $zoom_tiles_web : url($zoom_tiles_web);
+        return $zoom_tiles_web . '/' . $root . self::ZOOM_FOLDER_EXTENSION;
     }
 
     /**
@@ -523,7 +522,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
                     throw new Omeka_Storage_Exception($message);
                 }
             }
-            rename($sourcePath, $destinationPath);
+            $result = rename($sourcePath, $destinationPath);
         }
     }
 

@@ -1,10 +1,6 @@
 OpenLayers Zoom (plugin for Omeka)
 ==================================
 
-
-Summary
--------
-
 This plugin for the [Omeka] platform adds a zoom widget that creates zoom-able
 tiles from images and presents it in a pure javascript zoom viewer (no Flash).
 
@@ -41,8 +37,8 @@ by
 
 ```
     <div id="item-images">
-        <?php set_loop_records('files', $item->getFiles());
-        foreach (loop('files') as $file):
+        <?php
+        foreach($item->Files as $file):
             fire_plugin_hook('open_layers_zoom_display_file', array('file' => $file));
         endforeach; ?>
     </div>
@@ -78,8 +74,8 @@ Warning
 
 Use it at your own risk.
 
-It's always recommended to backup your files and database so you can roll back
-if needed.
+It's always recommended to backup your files and database regularly so you can
+roll back if needed.
 
 
 Troubleshooting
@@ -91,7 +87,7 @@ See online [OpenLayers Zoom issues] page on GitHub.
 License
 -------
 
-* This plugin is published under [GNU/GPL].
+This plugin is published under [GNU/GPL].
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -130,26 +126,26 @@ The upgrade for Omeka 2.0 has been built for [Mines ParisTech].
 Copyright
 ---------
 
-* @copyright Daniel Berthereau, 2013-2014
+* @copyright Daniel Berthereau, 2013-2015
 * @copyright Peter Binkley, 2012-2013
 * @copyright Matt Miller, 2012
 
 See copyrights for libraries in files inside `helpers` folder.
 
 
-[Omeka]: https://omeka.org "Omeka.org"
+[Omeka]: https://omeka.org
 [IIPImage]: http://iipimage.sourceforge.net
 [OpenLayers]: http://www.openlayers.org
 [OldsMapOnline]: http://www.oldmapsonline.org
 [Zoomify]: http://www.zoomify.com
 [OpenLayers Zoom demo]: http://thisismattmiller.com/zoom
-[OpenLayers Zoom]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin "GitHub OpenLayers Zoom"
+[OpenLayers Zoom]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin
 [ImageMagick]: http://www.imagemagick.org
 [GD]: http://www.ligbd.org
-[OpenLayers Zoom issues]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin "GitHub OpenLayers Zoom issues"
-[GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html "GNU/GPL v3"
+[OpenLayers Zoom issues]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin
+[GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
 [Peter Binkley]: https://github.com/pbinkley
 [University of Alberta Libraries]: https://github.com/ualbertalib
 [Matt Miller]: https://github.com/thisismattmiller
-[Mines ParisTech]: http://bib.mines-paristech.fr "Mines ParisTech / ENSMP"
+[Mines ParisTech]: http://bib.mines-paristech.fr

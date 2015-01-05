@@ -6,16 +6,14 @@
                 echo ' ' . __('Warning: Zoomify process is heavy, so you may need to increase memory and time on your server before proceeding.');
             ?>
         </p>
-        <label class="two columns alpha">
-            <?php echo __('Zoomify'); ?>
-        </label>
+        <div class="two columns alpha">
+            <?php echo $this->formLabel('openlayerszoom_zoomify', __('Zoomify')); ?>
+        </div>
         <div class="inputs five columns omega">
-            <label class="zoomify">
-                <?php
-                    echo $this->formCheckbox('custom[openlayerszoom][zoomify]', null, array(
-                        'checked' => false, 'class' => 'zoomify-checkbox'));
-                ?>
-            </label>
+            <?php
+                echo $this->formCheckbox('custom[openlayerszoom][zoomify]', null, array(
+                    'checked' => false, 'class' => 'zoomify-checkbox'));
+            ?>
         </div>
     </div>
 </fieldset>
