@@ -8,8 +8,6 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'OpenLayersZoomFunctions.php';
-
 /**
  * The OpenLayers Zoom plugin.
  *
@@ -499,16 +497,20 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
      */
     protected function _createTiles($filename)
     {
-        include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers'. DIRECTORY_SEPARATOR . 'ZoomifyHelper.php';
+        require_once dirname(__FILE__)
+            . DIRECTORY_SEPARATOR . 'libraries'
+            . DIRECTORY_SEPARATOR . 'OpenLayersZoom'
+            . DIRECTORY_SEPARATOR . 'Zoomify'
+            . DIRECTORY_SEPARATOR . 'Zoomify.php';
 
         // Tiles are built in-place, in a subdir of the original image folder.
         // TODO Add a destination path to use local server path and to avoid move.
         $originalDir = FILES_DIR . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR;
         list($root, $ext) = $this->_getRootAndExtension($filename);
-        $sourcePath = $originalDir . $root . '_zdata';
+        $sourcePath = $originalDir . $root . self::ZOOM_FOLDER_EXTENSION;
 
-        $zoomifyObject = new zoomify($originalDir);
-        $zoomifyObject->zoomifyObject($filename, $originalDir);
+        $zoomify = new Zoomify($originalDir);
+        $zoomify->zoomifyObject($filename, $originalDir);
 
        // Move the tiles into their storage directory.
        if (file_exists($sourcePath)) {

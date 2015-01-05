@@ -1,7 +1,7 @@
 <?php
 	/**
 	* bulk_build_tiles.php
-	* This script will build all zoom_tiles for a specific collection 
+	* This script will build all zoom_tiles for a specific collection
 	*
 	* @license http://www.gnu.org/licenses/gpl-3.0.txt GNU GPLv3
 	* @author Sylvain Machefert - Bordeaux 3
@@ -21,7 +21,7 @@
 
 	require_once dirname(dirname(dirname(__FILE__))).'/bootstrap.php';
 	require_once("OpenLayersZoomPlugin.php");
-	require_once("helpers/ZoomifyFileProcessor.php");
+	require_once('libraries/OpenLayersZoom/Zoomify/ZoomifyFileProcessor.php');
 
 	$autoloader = Zend_Loader_Autoloader::getInstance();
 	$application = new Omeka_Application(APPLICATION_ENV);
@@ -76,7 +76,7 @@
 		{
 			print "En cours : ".$computer_size."\n";
 			$fp->ZoomifyProcess($filename);
-			rename($sourcePath,$destination);	
+			rename($sourcePath,$destination);
 			print "Tiling $filename [$item_id]\n";
 		}
 	}

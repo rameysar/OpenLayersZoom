@@ -4,8 +4,18 @@
  *
  * @package OpenLayersZoom
  */
-class OpenLayersZoom
+class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstract
 {
+    /**
+     * Get the helper.
+     *
+     * @return This view helper.
+     */
+    public function openLayersZoom()
+    {
+        return $this;
+    }
+
     /**
      * Get an array of all zoomed images of an item.
      *
@@ -14,7 +24,7 @@ class OpenLayersZoom
      * @return array
      *   Associative array of file id and files.
      */
-    public static function getZoomedFiles($item = null)
+    public function getZoomedFiles($item = null)
     {
         $o = new OpenLayersZoomPlugin;
         return $o->getZoomedFiles($item);
@@ -28,7 +38,7 @@ class OpenLayersZoom
      * @return integer
      *   Number of zoomed images attached to an item.
      */
-    public static function zoomedFilesCount($item = null)
+    public function zoomedFilesCount($item = null)
     {
         $o = new OpenLayersZoomPlugin;
         return $o->zoomedFilesCount($item);
@@ -41,7 +51,7 @@ class OpenLayersZoom
      *
      * @return string
      */
-    public static function getTileUrl($file = null)
+    public function getTileUrl($file = null)
     {
         $o = new OpenLayersZoomPlugin;
         return $o->getTileUrl($file);
@@ -54,7 +64,7 @@ class OpenLayersZoom
      *
      * @return boolean
      */
-    public static function isZoomed($file = null)
+    public function isZoomed($file = null)
     {
         $o = new OpenLayersZoomPlugin;
         return $o->isZoomed($file);
