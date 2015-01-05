@@ -25,29 +25,55 @@ Installation
 Unzip [OpenLayers Zoom] into the plugin directory, rename the folder
 "OpenLayersZoom" if needed, then install it from the settings panel.
 
-In the `items/show.php` of your theme, replace:
+The viewer is displayed via three mechanisms, plus the old one. So, according to
+your needs, you may use the default hook or add the code below in the
+`items/show.php` file of your theme or anywhere else.
+
+* Default hook `public_items_show`
+    - This hook is set by default, but an option allows to remove it.
+
+* Helper
+    - This can be used anywhere in the theme. The record can be an item or a
+    file.
 
 ```
-    <div id="item-images">
-        <?php echo files_for_item(); ?>
-    </div>
+    <?php echo $this->openLayersZoom()->zoom($record); ?>
 ```
 
-by
+* Shortcode
+    - Currently, only one shortcode can be added by page.
+    - In a field that can be shortcoded: `[zoom]` (default is the current item
+    or file).
+    - Default in theme: `<?php echo $this->shortcodes('[zoom]'); ?>`
+    - With all options:
 
 ```
-    <div id="item-images">
+    <?php echo $this->shortcodes('[zoom record_id=1 record_type=item]'); ?>
+```
+
+* Old hook `open_layers_zoom_display_file`
+    - This hook will be removed in the next release. In the `items/show.php` of
+    your theme, add:
+
+```
+    <div class="openlayerszoom-images">
         <?php
-        foreach($item->Files as $file):
+        foreach ($item->Files as $file):
             fire_plugin_hook('open_layers_zoom_display_file', array('file' => $file));
         endforeach; ?>
     </div>
 ```
 
-Be careful to keep the div with id "item-images" around the call to OpenLayers, otherwise it won't work.
+Note that the id attribute `item-images` of the div wrapper of the previous
+releases has been replaced by the class `openlayerszoom-images` to simplify
+the loading of multiple zoomed files. This class is needed for the javascript
+and is automatically added.
 
-Edit `views/shared/css/OpenLayersZoom.css` to change the size/appearance of the
-zoom viewer.
+Finally, copy `views/shared/css/OpenLayersZoom.css` in your theme if you want to
+modify the size/appearance of the zoom viewer.
+
+Note: Some issues may appear on some browsers when multiple OpenLayersZoom are
+displayed on the same page.
 
 
 Use
