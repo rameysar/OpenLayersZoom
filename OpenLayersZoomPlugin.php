@@ -21,6 +21,7 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_hooks = array(
         'install',
         'uninstall',
+        'initialize',
         'config_form',
         'config',
         'admin_items_batch_edit_form',
@@ -84,6 +85,14 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
         $this->_rrmdir($tilesDir);
 
         $this->_uninstallOptions();
+    }
+
+    /**
+     * Initialize the plugin.
+     */
+    public function hookInitialize()
+    {
+        add_shortcode('zoom', array($this, 'shortcodeOpenLayersZoom'));
     }
 
     /**
@@ -341,6 +350,45 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
         }
         $tabs = $ttabs;
         return $tabs;
+    }
+
+    /**
+     * Shortcode to display viewer.
+     *
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
+    public static function shortcodeOpenLayersZoom($args, $view)
+    {
+        // Check required arguments
+        $recordType = isset($args['record_type']) ? $args['record_type'] : 'Item';
+        $recordType = ucfirst(strtolower($recordType));
+        if (!in_array($recordType, array('Item', 'File'))) {
+            return;
+        }
+
+        // Get the specified record.
+        if (isset($args['record_id'])) {
+            $recordId = (integer) $args['record_id'];
+            $record = get_record_by_id($recordType, $recordId);
+        }
+        // Get the current record.
+        else {
+            $record = get_current_record(strtolower($recordType));
+        }
+        if (empty($record)) {
+            return;
+        }
+
+        $html = $view->openLayersZoom()->zoom($record);
+        if ($html) {
+            $html = '<link href="' . css_src('OpenLayersZoom') . '" media="all" rel="stylesheet" type="text/css" >'
+                . js_tag('OpenLayers')
+                . js_tag('OpenLayersZoom')
+                . $html;
+            return $html;
+        }
     }
 
     /**
