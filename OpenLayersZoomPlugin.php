@@ -114,8 +114,11 @@ class OpenLayersZoomPlugin extends Omeka_Plugin_AbstractPlugin
         $post = $args['post'];
 
         $post['openlayerszoom_tiles_dir'] = realpath(trim($post['openlayerszoom_tiles_dir']));
-        foreach ($post as $key => $value) {
-            set_option($key, $value);
+
+        foreach ($this->_options as $optionKey => $optionValue) {
+            if (isset($post[$optionKey])) {
+                set_option($optionKey, $post[$optionKey]);
+            }
         }
     }
 
