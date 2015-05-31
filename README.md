@@ -107,7 +107,7 @@ roll back if needed.
 Troubleshooting
 ---------------
 
-See online [OpenLayers Zoom issues] page on GitHub.
+See online issues on the [plugin issues] page on GitHub.
 
 
 License
@@ -168,7 +168,7 @@ See copyrights for libraries in files inside `helpers` folder.
 [OpenLayers Zoom]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin
 [ImageMagick]: http://www.imagemagick.org
 [GD]: http://www.ligbd.org
-[OpenLayers Zoom issues]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin
+[plugin issues]: https://github.com/thisismattmiller/OpenLayers-Omeka-Zoom-Plugin/issues
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
 [Peter Binkley]: https://github.com/pbinkley
