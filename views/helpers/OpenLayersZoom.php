@@ -42,22 +42,26 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
 
         switch (get_class($record)) {
             case 'Item':
+				/**Get all zoomed files attached to $record; $this refers to current object; retrieve those files with gZF function**/
                 $zoomedFiles = $this->getZoomedFiles($record);
-                if (!empty($zoomedFiles)) {
-                    $html = '<div class="openlayerszoom-images">';
-                    foreach ($zoomedFiles as $file) {
-                        $html .= $this->_zoomFile($file);
+				$zoomedFiles = array();
+				foreach ($zoomedFiles as $file){
+					$zoomedFiles[$file]=(!(empty($zoomedFiles[$file]))) ? $zoomedFiles[$file]++ : 1;
+						/*Creates string: "<div class="openlayerszoom-images, id="some id">, _zoomFile($file), </div> */
+                        $html = '<div class="openlayerszoom-images", id="each_zoom$x">';
+						$html .= $this->_zoomFile($file);
+						$html .= '</div>';
                     }
-                    $html .= '</div>';
-                }
+					//DEFINE $x+n, where n adds one for each new file; USE FOREACH (see php site)
+		
                 break;
 
             case 'File':
                 $result = $this->_zoomFile($record);
                 if ($result) {
-                    $html = '<div class="openlayerszoom-images">';
-                    $html .= $result;
-                    $html .= '</div>';
+                        $html = '<div class="openlayerszoom-images", id="each_zoom$x">';
+						$html .= $this->_zoomFile($file);
+						$html .= '</div>';
                 }
                 break;
         }
@@ -151,11 +155,23 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
     /**
      * Helper to zoom a file.
      */
+		/*Adds to string: "<div class="openlayerszoom-images, id="some id">, _zoomFile($file), </div>" */
+		
+		/*String becomes: "<div class="openlayerszoom-images, id="some id">, <script type="text/javascript">, 
+		* open_layers_zoom_add_zoom("' . $root . '","' . $width . '","' . $height . '","' . $tileUrl . '/",' . $open_zoom_layer_req . '), 
+		* </script>, </div>" 
+		*$root doesn't matter; $req doesn't matter; Only $width, $height and $tileUrl do anything.
+		*calls to javascript for the function open_layers_zoom_add_zoom
+		*/
+
     protected function _zoomFile($file)
     {
+		/* $file becomes a retrieved $tileUrl*/
         $tileUrl = $this->getTileUrl($file);
+		/* If there is a tileUrl that has been successfully retrieved... */
         if ($tileUrl) {
             // Root is not used in the javascript, but only here.
+			// Grabs the filename of each $file to create the $root
             list($root, $ext) = $this->_creator->getRootAndExtension($file->filename);
 
             // Grab the width/height of the original image.
@@ -170,7 +186,8 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
             $open_zoom_layer_req = isset($_REQUEST['open_zoom_layer_req'])
                 ? html_escape($_REQUEST['open_zoom_layer_req'])
                 : '-1';
-
+			
+			//this adds the relevant portion to the string, says: do this function
             $html = '<script type="text/javascript">'
                 . 'open_layers_zoom_add_zoom("' . $root . '","' . $width . '","' . $height . '","' . $tileUrl . '/",' . $open_zoom_layer_req . ');'
             . '</script>';

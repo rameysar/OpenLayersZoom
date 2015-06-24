@@ -27,9 +27,6 @@
     right: 10px;
     top: 10px;
 }
-#OpenLayers_Control_minimizeDiv_innerImage {
-    background-color: #00008b;
- }
 
 /* fullscreen control button; icon from https://github.com/fredj/openlayers-fullscreen */
 .open_layers_zoom_map_full_window_buttonItemInactive,
