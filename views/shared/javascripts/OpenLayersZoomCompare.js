@@ -1,8 +1,5 @@
 var map = null;
-
-var open_layers_zoom_total_zooms = 0;
-// keep track of how many zooms we got going on
-
+var x=0;
 /**
  * file_name = the base of the filename
  * width/height = w/h of the image
@@ -11,17 +8,12 @@ var open_layers_zoom_total_zooms = 0;
  */
 function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
 
-    // Is this the first call to this function to add a zoom element?
-    if (! open_layers_zoom_total_zooms) {
-        // Yes so add the holders
-        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map'));
-        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more'));
-        jQuery(".openlayerszoom-images").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window'));
-    }
+ jQuery("#zoom"+x).append(jQuery("<div>").attr("id", 'open_layers_zoom_map'+x));
+ jQuery("#zoom"+x).append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more'+x));
+ jQuery("#zoom"+x).append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window'+x));
 
-    // If this is not a specific request and it is the first image or it is a
-    // specifc request display it.
-    if ((req == -1 && open_layers_zoom_total_zooms == 0) || open_layers_zoom_total_zooms == req) {
+
+
 
         /* Vector layer */
 
@@ -88,7 +80,7 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
             ]
         };
 
-        map = new OpenLayers.Map("open_layers_zoom_map", options);
+        map = new OpenLayers.Map("open_layers_zoom_map"+x, options);
         map.addLayer(zoomify);
         map.addControl(new OpenLayers.Control.Permalink('permalink', null, {
         }));
@@ -128,19 +120,10 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
 
         // At last,adding it to the map:
         map.addControl(overviewControl);
-    }
 
-    // Now add in the links.
-    jQuery("#open_layers_zoom_map_more").empty();
-    if (open_layers_zoom_total_zooms > 0) {
-        for (x = 0; x <= open_layers_zoom_total_zooms; x++) {
-            jQuery("#open_layers_zoom_map_more").append(jQuery("<a>").attr("href", '?open_zoom_layer_req=' + x).text("Load Image " + (x + 1)));
-        }
-    }
-
-    open_layers_zoom_total_zooms = open_layers_zoom_total_zooms + 1;
+        x = ++x;
 }
 
 function open_layers_zoom_toggle_full_window() {
-    jQuery('#open_layers_zoom_map').toggleClass('open_layers_zoom_map_full_window');
+    //jQuery('#open_layers_zoom_map0').toggleClass('open_layers_zoom_map_full_window');
 }

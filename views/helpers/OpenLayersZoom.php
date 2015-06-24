@@ -39,27 +39,20 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
     public function zoom($record)
     {
         $html = '';
-
         switch (get_class($record)) {
             case 'Item':
-				/**Get all zoomed files attached to $record; $this refers to current object; retrieve those files with gZF function**/
-                $zoomedFiles = $this->getZoomedFiles($record);
-				$x=0;
-				foreach ($zoomedFiles as $file){
-						/*Creates string: "<div class="openlayerszoom-images, id="some id">, _zoomFile($file), </div> */
-                        $html = '<div class="openlayerszoom-images", id="each_zoom'.$x.'">';
-						$html .= $this->_zoomFile($file);
-						$html .= '</div>';
-                    $x++;
-					}
-					//DEFINE $x+n, where n adds one for each new file; USE FOREACH (see php site)
-		
+				$zoomedFiles = $this->getZoomedFiles($record);
+                if (!empty($zoomedFiles)) {                  
+                   foreach ($zoomedFiles as $file) {
+                        $html = $this->_zoomFile($file);
+                   }   
+                }
                 break;
 
             case 'File':
                 $result = $this->_zoomFile($record);
                 if ($result) {
-                        $html = '<div class="openlayerszoom-images", id="each_zoom$x">';
+                        $html = '<div class="openlayerszoom-images">';
 						$html .= $this->_zoomFile($file);
 						$html .= '</div>';
                 }
@@ -187,7 +180,6 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
                 ? html_escape($_REQUEST['open_zoom_layer_req'])
                 : '-1';
 			
-			//this adds the relevant portion to the string, says: do this function
             $html = '<script type="text/javascript">'
                 . 'open_layers_zoom_add_zoom("' . $root . '","' . $width . '","' . $height . '","' . $tileUrl . '/",' . $open_zoom_layer_req . ');'
             . '</script>';

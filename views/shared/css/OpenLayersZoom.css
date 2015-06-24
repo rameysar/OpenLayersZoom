@@ -1,13 +1,13 @@
-#open_layers_zoom_map {
+#open_layers_zoom_map, #open_layers_zoom_map0, #open_layers_zoom_map1 {
     width: 100%;
     height: 456px;
     border: 1px solid #ccc;
     clear: both;
 }
-#open_layers_zoom_map_more {
+#open_layers_zoom_map_more, #open_layers_zoom_map_more0, #open_layers_zoom_map_more1 {
     clear: both;
 }
-#open_layers_zoom_map_more a {
+#open_layers_zoom_map_more a, #open_layers_zoom_map_more0 a, #open_layers_zoom_map_more1 a {
     margin-right: 5px;
 }
 .olMap.open_layers_zoom_map_full_window {
