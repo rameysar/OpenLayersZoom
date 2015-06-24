@@ -19,12 +19,12 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
     if (! open_layers_zoom_total_zooms) {
         // Yes so add the holders
 		//create these ids for the images (grouped together as one--need to split)
-        jQuery(".each_zoom$x+0").append(jQuery("<div>").attr("class", 'open_layers_zoom_map1'));
-        jQuery(".each_zoom$x+0").append(jQuery("<div>").attr("class", 'open_layers_zoom_map_more1'));
-        jQuery(".each_zoom$x+0").append(jQuery("<div>").attr("class", 'open_layers_zoom_map_full_window1'));
-		jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("class", 'open_layers_zoom_map2'));
-        jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("class", 'open_layers_zoom_map_more2'));
-        jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("class", 'open_layers_zoom_map_full_window2'));
+        jQuery(".each_zoom".).append(jQuery("<div>").attr("id", 'open_layers_zoom_map1'));
+        jQuery(".each_zoom$x+0").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more1'));
+        jQuery(".each_zoom$x+0").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window1'));
+		jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("id", 'open_layers_zoom_map2'));
+        jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_more2'));
+        jQuery(".each_zoom$x+1").append(jQuery("<div>").attr("id", 'open_layers_zoom_map_full_window2'));
 	}
 
     // If this is not a specific request and it is the first image or it is a

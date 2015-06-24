@@ -44,14 +44,14 @@ class OpenLayersZoom_View_Helper_OpenLayersZoom extends Zend_View_Helper_Abstrac
             case 'Item':
 				/**Get all zoomed files attached to $record; $this refers to current object; retrieve those files with gZF function**/
                 $zoomedFiles = $this->getZoomedFiles($record);
-				$zoomedFiles = array();
+				$x=0;
 				foreach ($zoomedFiles as $file){
-					$zoomedFiles[$file]=(!(empty($zoomedFiles[$file]))) ? $zoomedFiles[$file]++ : 1;
 						/*Creates string: "<div class="openlayerszoom-images, id="some id">, _zoomFile($file), </div> */
-                        $html = '<div class="openlayerszoom-images", id="each_zoom$x">';
+                        $html = '<div class="openlayerszoom-images", id="each_zoom'.$x.'">';
 						$html .= $this->_zoomFile($file);
 						$html .= '</div>';
-                    }
+                    $x++;
+					}
 					//DEFINE $x+n, where n adds one for each new file; USE FOREACH (see php site)
 		
                 break;
