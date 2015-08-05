@@ -40,26 +40,7 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
 
         var mapbounds =  new OpenLayers.Bounds(0, 0, width, height);
 
-        // Full screen button, based on http://jsfiddle.net/_DR_/K2WaA/1/
-        var fullscreenPanel = new OpenLayers.Control.Panel({displayClass: 'open_layers_zoom_map_full_window_panel'});
 
-        var fullscreenControl = new OpenLayers.Control.Button({
-            displayClass: 'open_layers_zoom_map_full_window_button',
-            type: OpenLayers.Control.TYPE_TOGGLE,
-            eventListeners: {
-                'activate': function () {
-                  open_layers_zoom_toggle_full_window();
-                  map.updateSize();
-                  map.zoomToMaxExtent();
-                },
-                'deactivate': function () {
-                  open_layers_zoom_toggle_full_window();
-                  map.updateSize();
-                  map.zoomToMaxExtent();
-                }
-            }
-        });
-        fullscreenPanel.addControls(fullscreenControl);
 
         // We must list all the controls, since we want to replace the default
         // PanZoom with a PanZoomBar
@@ -69,24 +50,14 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
             maxResolution: Math.pow(2, zoomify.numberOfTiers -1),
             numZoomLevels: zoomify.numberOfTiers,
             units: "pixels",
-            controls:[
-                new OpenLayers.Control.Navigation(),
-                new OpenLayers.Control.ArgParser(),
-                new OpenLayers.Control.Attribution(),
-                new OpenLayers.Control.PanZoomBar({
-                    "zoomWorldIcon": true
-                }),
-                fullscreenPanel
-            ]
+
         };
 
         map = new OpenLayers.Map("open_layers_zoom_map"+x, options);
         map.addLayer(zoomify);
-        map.addControl(new OpenLayers.Control.Permalink('permalink', null, {
-        }));
         map.setBaseLayer(zoomify);
 
-        if (!map.getCenter()) map.zoomToMaxExtent();
+        if (!map.getCenter()) map.zoomTo(2);
 
         // Add overview map
         // workaround based on http://osgeo-org.1803224.n2.nabble.com/zoomify-layer-WITH-overview-map-td5534360.html
@@ -122,8 +93,4 @@ function open_layers_zoom_add_zoom(file_name_base, width, height, url, req) {
         map.addControl(overviewControl);
 
         x = ++x;
-}
-
-function open_layers_zoom_toggle_full_window() {
-    //jQuery('#open_layers_zoom_map0').toggleClass('open_layers_zoom_map_full_window');
 }
